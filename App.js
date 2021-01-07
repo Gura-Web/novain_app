@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,useEffect } from 'react';
 import Swiper from 'react-native-deck-swiper';
 import {TouchableOpacity, Button, StyleSheet, Text, View,Image } from 'react-native';
 import { SwipeablePanel } from 'rn-swipeable-panel';
@@ -17,6 +17,9 @@ const musicList = [
       {id:1, name:"バラード"},
       {id:2, name:"デュエット"},
     ],
+    imageName: require("./assets/images/1.jpg"),
+    music: require('./assets/music.mp3'),
+    audioObject: new Audio.Sound()
   },
   {
     artistName: "石丸 大貴２", 
@@ -30,6 +33,9 @@ const musicList = [
       {id:1, name:"バラード"},
       {id:2, name:"デュエット"},
     ],
+    imageName: require("./assets/images/2.jpg"),
+    music: require('./assets/music.mp3'),
+    audioObject: new Audio.Sound()
   },
   {
     artistName: "石丸 大貴３", 
@@ -43,6 +49,9 @@ const musicList = [
       {id:1, name:"バラード"},
       {id:2, name:"デュエット"},
     ],
+    imageName: require("./assets/images/7.jpg"),
+    music: require('./assets/music.mp3'),
+    audioObject: new Audio.Sound()
   },
   
 ]
@@ -62,52 +71,71 @@ export default class Exemple extends Component {
         onClose: () => this.closePanel(),
         onPressCloseButton: () => this.closePanel(),
       },
-      isPanelActive: true
+      isPanelActive: true,
+      isBackPressed: false
     }
   }
 
-  play = async ()=> {
-    const soundObject = new Audio.Sound();
-    await soundObject.loadAsync(require('./assets/music.mp3'));
-    await soundObject.playAsync();
+  componentdidmount() {
+    
   }
 
+  musicPlay = async (data)=> {
+    await data.audioObject.loadAsync(data.music);
+    await data.audioObject.playAsync();
+  }
+ 
   renderCard = (card, index) => {
     return (
       <View style={styles.card}>
-        {/* <Image source={require('./assets/1.jpg')} resizeMode={'contain'} style={{ height: 62, width: 62 }} /> */}
-        {/* {this.play()} */}
+        <Image source={card.imageName} resizeMode={'cover'} style={{width:460,height:530,marginLeft: -50}} />
         <Text>{card.artistName + card.musicName}</Text>
-        {card.categories.map(category => {
-          return (<Text>{category.name}</Text>)
+        {card.categories.map((category,index) => {
+          return (<Text key={index}>{category.name} {card.imageName}</Text>)
         })}
         {card.genres.map(genre => {
-          return (<Text>{genre.name}</Text>)
+          return (<Text key={index}>{genre.name}</Text>)
         })}
       </View>
     )
   };
 
   onSwiped = (type) => {
-    if(this.state.cardIndex !== musicList.length) { // index番号が音楽の数を超えないように
-      this.setState({
-        cardIndex: this.state.cardIndex++
-      });
+    if(type == "general") {
     }
   }
 
-  onSwipedAllCards = () => {
-    this.setState({
-      swipedAllCards: true
-    })
+  swipeLeft = () => {
+    if(this.state.cardIndex < musicList.length - 1) { // index番号が音楽の数を超えないように
+      this.setState({
+        cardIndex: this.state.cardIndex + 1,
+        isBackPressed: true,
+      });
+    }
   };
 
-  swipeLeft = () => {
-    this.swiper.swipeLeft()
+  swipeRight = () => {
+    if(this.state.cardIndex < musicList.length - 1) { // index番号が音楽の数を超えないように
+      this.setState({
+        cardIndex: this.state.cardIndex + 1,
+        isBackPressed: true,
+      });
+    }
+  };
+
+  
+  swipeBack = () => {
+    if(!this.state.isBackPressed && this.state.cardIndex != 0) { // 一回しか戻れないようにする
+      this.swiper.swipeBack();
+      this.setState({
+        cardIndex: this.state.cardIndex - 1,
+        isBackPressed: false,
+      });
+    }
   };
 
   closePanel = () => {
-    this.state.isPanelActive = false;
+    
   };
 
 
@@ -115,49 +143,63 @@ export default class Exemple extends Component {
     return (
       <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={{color: 'white'}}>曲を探す</Text>
-            <Text style={styles.headerRightTop}>ハート</Text>
+              <TouchableOpacity onPress={() => {}}>
+                <Text style={styles.searchBtn}>曲を探す{this.state.cardIndex}{this.state.isBackPressed ? "true": "falses"}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.headerRightTop} onPress={() => {}}>
+                <Image source={require('./assets/images/icon/favorite_24px_1x.png')}/>
+              </TouchableOpacity>
         </View>
 
-        <SwipeablePanel {...this.state.panelProps} isActive={this.state.isPanelActive} noBackgroundOpacity={true} showCloseButton={false} openLarge={false}>
-          <View style={styles.footer}>
-            {/* 曲概要 */}
-            <Text style={{fontSize: 32,textAlign:"center"}}>{musicList[this.state.cardIndex].musicName}</Text>
-            <Text style={{textAlign:"center"}}>{musicList[this.state.cardIndex].artistName}</Text>
-
+        <SwipeablePanel {...this.state.panelProps} isActive={this.state.isPanelActive} noBackgroundOpacity={true} showCloseButton={false} openLarge={false} style={{backgroundColor:"black"}} barStyle={{backgroundColor: "#8A8A8A", width:140}}>
+          {/* 曲概要 */}
+          <Text style={{marginTop: 12,fontSize: 28,fontWeight: 'bold',textAlign:"center",color: "#fff"}}>{musicList[this.state.cardIndex].musicName}</Text>
+          <Text style={{marginTop: 4,fontSize: 16,textAlign:"center",color: "#9D9D9D"}}>{musicList[this.state.cardIndex].artistName}</Text>
+          {/* 操作ボタンを囲む */}
+          <View style={{flexDirection:'row',justifyContent:'center',marginTop: 20}}>
             {/* 操作ボタン */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={[styles.button, styles.red]} onPress={() => {
+              <TouchableOpacity style={[styles.buttonSmall,{ marginRight: 12,marginTop:30},!this.state.isBackPressed && {opacity: 0.3}]} onPress={() => {
+                  this.swipeBack();
             }}>
-              <Image source={require('./assets/1.jpg')} resizeMode={'contain'} style={{ height: 62, width: 62 }} />
+              <Image source={require('./assets/images/icon/reply_24px.png')} resizeMode={'contain'} style={[{ height: 40, width: 40}]} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.orange]} onPress={() => {
+            <TouchableOpacity style={[styles.button,{ marginRight: 16}]} onPress={() => {
+              if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeLeft();
+              // this.swiper.swipeLeft();
             }}>
-              <Image source={require('./assets/1.jpg')} resizeMode={'contain'} style={{ height: 32, width: 32, borderRadius: 5 }} />
+              <Image source={require('./assets/images/icon/close_24px.png')} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.green]} onPress={() => {
+
+            <TouchableOpacity style={[styles.button]} onPress={() => {
+              if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeRight();
+              // this.swiper.swipeRight();
             }}>
-              <Image source={require('./assets/1.jpg')} resizeMode={'contain'} style={{ height: 62, width: 62 }} />
+              <Image source={require('./assets/images/icon/favorite_24px.png')} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
             </TouchableOpacity>
-          </View>
-          
+
+            <TouchableOpacity style={[styles.buttonSmall,{ marginLeft: 12, marginTop:30}]} onPress={() => {
+            }}>
+              <Image source={require('./assets/images/icon/pause_24px.png')} resizeMode={'contain'} style={{ height: 40, width: 40 }} />
+            </TouchableOpacity>
         </View> 
       </SwipeablePanel>  
         <Swiper
           ref={swiper => {
             this.swiper = swiper
           }}
-          onSwiped={() => this.onSwiped('general')}
-          onSwipedLeft={() => this.onSwiped('left')}
-          onSwipedRight={() => this.onSwiped('right')}
+          onSwiped={this.onSwiped('general')}
+          onSwipedLeft={() => this.swipeLeft()}
+          onSwipedRight={() => this.swipeRight()}
           onSwipedTop={() => this.onSwiped('top')}
           onSwipedBottom={() => this.onSwiped('bottom')}
-          onTapCard={this.swipeLeft}
+
+          // onTapCard={()=> this.swipeLeft()}
           cards={this.state.cards}
           cardIndex={this.state.cardIndex}
           cardVerticalMargin={80}
           renderCard={this.renderCard}
-          onSwipedAll={this.onSwipedAllCards}
+
+          // onSwipedAll={this.onSwipedAllCards}
           stackSize={3}
           stackSeparation={15}
           overlayLabels={overlayLabels}
@@ -165,7 +207,7 @@ export default class Exemple extends Component {
           animateCardOpacity
           swipeBackCard
         >
-          <Button onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
+          {/* <Button onPress={() => this.swiper.swipeBack()} title='Swipe Back' /> */}
         </Swiper>
       </View>
     )
@@ -185,37 +227,53 @@ const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent: "center",
     zIndex:100,
-    paddingTop: 30
+    paddingTop: 35,
+  },
+  searchBtn: {
+    color: 'white',
+    fontSize: 20,
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderStyle: "solid",
+    paddingTop: 7,
+    paddingBottom: 7,
+    paddingLeft: 60,
+    paddingRight: 60,
   },
   headerRightTop: {
     color: "#fff",
     position: "absolute",
-    top: 50,
-    right: 50,
+    top: 46,
+    right: 28,
   },
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF'
+  },
+  footer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+  },
+  button: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  buttonSmall: {
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
   },
   card: {
-    flex: 1,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: '#E8E8E8',
-    justifyContent: 'center',
-    backgroundColor: 'white'
+
   },
-  text: {
-    textAlign: 'center',
-    fontSize: 50,
-    backgroundColor: 'transparent'
-  },
-  done: {
-    textAlign: 'center',
-    fontSize: 30,
-    color: 'white',
-    backgroundColor: 'transparent'
-  }
+
 })
 
 
