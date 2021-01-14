@@ -9,16 +9,27 @@ import { createStackNavigator } from 'react-navigation-stack';
 import favoriteList from './screens/favoriteList';
 import searchMusic from './screens/searchMusic';
 import artistProfile from './screens/artistProfile';
+import Global from './Global';
+import {  
+  combineReducers,
+  createStore,
+} from 'redux';
 
-// const MainStack = createStackNavigator(
-//   {
-//     Page1: favoriteList,
-//     Page2: searchMusic,
-//   },
-//   {
-//     initialRouteName: 'Page1'
-//   }
-// )
+// export const deleteName = () => ({  
+//   type: 'DELETE_NAME',
+//   name: ''
+// });
+
+// export const setName = name => ({  
+//   type: 'ADD_NAME',
+//   name: name,
+// });
+
+// INITIAL_STATE = {
+//   name: 'Nanasi'
+// }
+
+
 const navigator = createStackNavigator({
     Page1: { screen: searchMusic, navigationOptions: () => ({ header: ()=> false})},
     Page2: { screen: favoriteList, navigationOptions: () => ({ header: ()=>  false})},
@@ -30,10 +41,9 @@ const navigator = createStackNavigator({
 const AppContainer = createAppContainer(navigator);
 export default class Exemple extends Component {
   render () {
-    
     return (
       <>
-        <AppContainer />
+        <AppContainer/>
       </>
     )
   }
