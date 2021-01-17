@@ -4,6 +4,8 @@ import {ScrollView,TouchableOpacity, Button, StyleSheet, Text, View,Image } from
 import { SwipeablePanel } from 'rn-swipeable-panel';
 import { Audio } from 'expo-av';
 import GestureRecognizer from 'react-native-swipe-gestures';
+const imagePath = "../assets/images/";
+const iconPath = "../assets/images/icon/";
 const musicList = [
   {
     id: 1,
@@ -161,8 +163,7 @@ const musicList = [
   },
 ]
 
-const imagePath = "../assets/images/";
-const iconPath = "../assets/images/icon/";
+
 const sound = new Audio.Sound();
 export default class searchMusic extends Component {
   constructor (props) {
@@ -286,31 +287,31 @@ export default class searchMusic extends Component {
         <Text style={{marginTop: 4,fontSize: 16,textAlign:"center",color: "#9D9D9D"}}>{musicList[this.state.cardIndex].artistName}</Text>
         <View style={{flexDirection:'row',justifyContent:'center',marginTop: 20}}>
         {/* 操作ボタン */}
-          <TouchableOpacity style={[styles.buttonSmall,{ marginRight: 12,marginTop:30}]} onPress={() => {
-              this.swipeBack();
-        }}>
-          <Image source={require(`${iconPath}reply_24px.png`)} resizeMode={'contain'} style={[{ height: 40, width: 40}]} />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button,{ marginRight: 16}]} onPress={() => {
-          if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeLeft();
-          // this.swiper.swipeLeft();
-        }}>
-          <Image source={require(`${iconPath}close_24px.png`)} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
-        </TouchableOpacity>
+            <TouchableOpacity style={[styles.buttonSmall,{ marginRight: 12,marginTop:30}]} onPress={() => {
+                this.swipeBack();
+          }}>
+            <Image source={require(`${iconPath}reply_24px.png`)} resizeMode={'contain'} style={[{ height: 40, width: 40,position:"relative",zIndex:100}]} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button,{ marginRight: 16}]} onPress={() => {
+            if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeLeft();
+            // this.swiper.swipeLeft();
+          }}>
+            <Image source={require(`${iconPath}close_24px.png`)} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
+          </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button]} onPress={() => {
-          if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeRight();
-          // this.swiper.swipeRight();
-        }}>
-          <Image source={require(`${iconPath}favorite_24px.png`)} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.button]} onPress={() => {
+            if(this.state.cardIndex < musicList.length - 1) this.swiper.swipeRight();
+            // this.swiper.swipeRight();
+          }}>
+            <Image source={require(`${iconPath}favorite_24px.png`)} resizeMode={'contain'} style={{ height: 48, width: 48 }} />
+          </TouchableOpacity>
 
-        {/* <TouchableOpacity style={[styles.buttonSmall,{ marginLeft: 12, marginTop:30},this.state.isMusicStop && {opacity: 0.5}]} onPress={() => { */}
-        <TouchableOpacity style={[styles.buttonSmall,{ marginLeft: 12, marginTop:30},this.state.isMusicStop && {opacity: 0.5}]} onPress={() => {
-          this.onStopMusic();
-        }}>
-          <Image source={require(`${iconPath}pause_24px.png`)} resizeMode={'contain'} style={{ height: 40, width: 40 }} />
-        </TouchableOpacity>
+          {/* <TouchableOpacity style={[styles.buttonSmall,{ marginLeft: 12, marginTop:30},this.state.isMusicStop && {opacity: 0.5}]} onPress={() => { */}
+          <TouchableOpacity style={[styles.buttonSmall,{ marginLeft: 12, marginTop:30}]} onPress={() => {
+            this.onStopMusic();
+          }}>
+            <Image source={require(`${iconPath}pause_24px.png`)} resizeMode={'contain'} style={{ height: 40, width: 40 }} />
+          </TouchableOpacity>
         </View> 
       </>
     )
@@ -324,7 +325,9 @@ export default class searchMusic extends Component {
         <Text style={styles.detailArtistTtl}>この曲を歌っているアーティスト</Text>
         <Text style={styles.detailArtistName}>石丸 大貴</Text>
         <View style={{flexDirection: "row",flex:1, justifyContent: "center",marginTop:12}}>
-          <Text style={styles.fillBtn}>プロフィールを見る</Text>
+          <TouchableOpacity onPress={() => {this.props.navigation.navigate('Page3')}}>
+            <Text style={styles.fillBtn}>プロフィールを見る</Text>
+          </TouchableOpacity>
           <Text style={styles.solidBtn}>youtubeへ移動する</Text>
         </View>
         <View>

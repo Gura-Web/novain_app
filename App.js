@@ -9,6 +9,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import favoriteList from './screens/favoriteList';
 import searchMusic from './screens/searchMusic';
 import artistProfile from './screens/artistProfile';
+import artistMusicList from './screens/artistMusicList';
 import Global from './Global';
 import {  
   combineReducers,
@@ -33,7 +34,8 @@ import {
 const navigator = createStackNavigator({
     Page1: { screen: searchMusic, navigationOptions: () => ({ header: ()=> false})},
     Page2: { screen: favoriteList, navigationOptions: () => ({ header: ()=>  false})},
-    Page2: { screen: artistProfile, navigationOptions: () => ({ header: ()=>  false})},
+    Page3: { screen: artistProfile, navigationOptions: () => ({ header: ()=>  false})},
+    Page4: { screen: artistMusicList, navigationOptions: () => ({ header: ()=>  false})},
   },
   {
       initialRouteParams: 'Page1'
